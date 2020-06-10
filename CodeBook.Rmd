@@ -106,4 +106,13 @@ Step 7: Create new data frame with mean value of each feature, grouped by activi
 mean.by.activity <- aggregate(df[,1:66], list(df$Activity), mean)
 ```
 
+top rows of first dataframe
+```{r}
+print(head(df))
+```
+
+second dataframe with mean by activity
+```{r}
+print(mean.by.activity)
+```
 
