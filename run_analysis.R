@@ -49,3 +49,6 @@ df$Activity <- activities$V2[df$Activity]
 
 #create table of mean by activity for each feature
 mean.by.activity <- aggregate(df[,1:66], list(df$Activity), mean)
+
+#write this table to a txt file
+write.table(mean.by.activity,"tidydata.txt",row.names = FALSE)
