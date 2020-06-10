@@ -47,7 +47,7 @@ train.Y <- read.table("./UCI HAR Dataset/train/Y_train.txt")
 test.Y <- read.table("./UCI HAR Dataset/test/Y_test.txt")
 ```
 
-Step 2: Merge all feature data into one dataframe
+Step 2: Merge train/test feature data and activity data into respective dataframes
 
 ```{r}
 df <- rbind(test.X,train.X)
@@ -86,7 +86,7 @@ df <- df[,mask]
 names(df) <- features$V2[mask]
 ```
 
-Step 5: Combine Features With Activity
+Step 5: Combine Features With Activities
 ```{r}
 df <- cbind(df,df.Y)
 ```
