@@ -20,8 +20,11 @@ df.Y <- rbind(test.Y,train.Y)
 names(df.Y) <- c("Activity")
 ```
 
-Step 3: Select only features with mean() or std() in name
+Step 3: Select only features with mean() or std() in name, name column appropriately
 ```{r}
+#pull in list of features
+features <- read.table("./UCI HAR Dataset/features.txt")
+
 #define helpful function to say if string contains values in meanstd
 mean.std <- function(string) {
   meanstd <- c("mean()","std()")
@@ -52,4 +55,35 @@ Step 5: Combine Features With Activity
 ```{r}
 df <- cbind(df,df.Y)
 ```
+
+Step 6: Better Describe Activities in Dataframe
+```{r}
+#pull in list of activities
+activities <- read.table("./UCI HAR Dataset/activity_labels.txt")
+
+#Change activity from number to more decriptive value
+df$Activity <- activities$V2[df$Activity]
+```
+
+Step 7: Create new data frame with mean value of each feature, grouped by activity
+```{r}
+#create table of mean by activity for each feature
+mean.by.activity <- aggregate(df[,1:66], list(df$Activity), mean)
+```
+
+The assignment asked for two dataframes.  One is data frame desrcibed at the end of step 4 with 66 features (only mean and std based) and all observations. This data frame is called "df" in this notebook.   The second dataframe on contains the mean of each of these variables, grouped by activity.  This is the dataframe decribed at step 5.   In this notebook, the dataframe is called mean.by.activity.   
+
+Description of the features is as follows (this is straight from the data source):
+
+The features selected for these dataframes come from the accelerometer and gyroscope 3-axial raw signals tAcc-XYZ and tGyro-XYZ. These time domain signals (prefix 't' to denote time) were captured at a constant rate of 50 Hz. Then they were filtered using a median filter and a 3rd order low pass Butterworth filter with a corner frequency of 20 Hz to remove noise. Similarly, the acceleration signal was then separated into body and gravity acceleration signals (tBodyAcc-XYZ and tGravityAcc-XYZ) using another low pass Butterworth filter with a corner frequency of 0.3 Hz. 
+
+Subsequently, the body linear acceleration and angular velocity were derived in time to obtain Jerk signals (tBodyAccJerk-XYZ and tBodyGyroJerk-XYZ). Also the magnitude of these three-dimensional signals were calculated using the Euclidean norm (tBodyAccMag, tGravityAccMag, tBodyAccJerkMag, tBodyGyroMag, tBodyGyroJerkMag). 
+
+Finally a Fast Fourier Transform (FFT) was applied to some of these signals producing fBodyAcc-XYZ, fBodyAccJerk-XYZ, fBodyGyro-XYZ, fBodyAccJerkMag, fBodyGyroMag, fBodyGyroJerkMag. (Note the 'f' to indicate frequency domain signals). 
+
+These signals were used to estimate variables of the feature vector for each pattern:  
+'-XYZ' is used to denote 3-axial signals in the X, Y and Z directions.
+
+
+
 

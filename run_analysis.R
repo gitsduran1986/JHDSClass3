@@ -41,4 +41,11 @@ df <- df[,mask]
 names(df) <- features$V2[mask]
 df <- cbind(df,df.Y)
 
+#pull in list of activities
+activities <- read.table("./UCI HAR Dataset/activity_labels.txt")
 
+#Change activity from number to more decriptive value
+df$Activity <- activities$V2[df$Activity]
+
+#create table of mean by activity for each feature
+mean.by.activity <- aggregate(df[,1:66], list(df$Activity), mean)
