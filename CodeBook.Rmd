@@ -1,14 +1,22 @@
-library(readr)
+---
+title: "Code Book Week 4 Project"
+output: html_notebook
+---
 
-#aquire data
+Step 1: Pull in Data
+
+```{r}
 test.X <- read.table("./UCI HAR Dataset/test/X_test.txt")
 train.X <- read.table("./UCI HAR Dataset/train/X_train.txt")
 train.Y <- read.table("./UCI HAR Dataset/train/Y_train.txt")
 test.Y <- read.table("./UCI HAR Dataset/test/Y_test.txt")
+```
 
-#merge data into one df
+Step 2: Merge all data into one dataframe
+
+```{r}
 test <- cbind(test.X,test.Y)
 train <- cbind(train.X,train.Y)
 df <- rbind(test,train)
-
+```
 
