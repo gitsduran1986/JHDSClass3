@@ -12,11 +12,44 @@ train.Y <- read.table("./UCI HAR Dataset/train/Y_train.txt")
 test.Y <- read.table("./UCI HAR Dataset/test/Y_test.txt")
 ```
 
-Step 2: Merge all data into one dataframe
+Step 2: Merge all feature data into one dataframe
 
 ```{r}
-test <- cbind(test.X,test.Y)
-train <- cbind(train.X,train.Y)
-df <- rbind(test,train)
+df <- rbind(test.X,train.X)
+df.Y <- rbind(test.Y,train.Y)
+names(df.Y) <- c("Activity")
+```
+
+Step 3: Select only features with mean() or std() in name
+```{r}
+#define helpful function to say if string contains values in meanstd
+mean.std <- function(string) {
+  meanstd <- c("mean()","std()")
+  x <- FALSE
+  for (i in meanstd) {
+    if (grepl(i,string)){
+      if (!grepl("meanFreq()",string)){
+        x <- TRUE
+        break
+      }
+    }
+  }
+  x
+}
+
+#create mask for features I want to include
+mask <- c()
+for (i in features$V2) {
+  mask <- append(mask,mean.std(i))
+}
+
+#select columns with values TRUE in mask
+df <- df[,mask]
+names(df) <- features$V2[mask]
+```
+
+Step 5: Combine Features With Activity
+```{r}
+df <- cbind(df,df.Y)
 ```
 

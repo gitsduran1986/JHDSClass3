@@ -237,19 +237,58 @@ test.Y &lt;- read.table(&quot;./UCI HAR Dataset/test/Y_test.txt&quot;)</code></p
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Step 2: Merge all data into one dataframe</p>
+<p>Step 2: Merge all feature data into one dataframe</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVzdCA8LSBjYmluZCh0ZXN0LlgsdGVzdC5ZKVxudHJhaW4gPC0gY2JpbmQodHJhaW4uWCx0cmFpbi5ZKVxuZGYgPC0gcmJpbmQodGVzdCx0cmFpbilcbmBgYCJ9 -->
-<pre class="r"><code>test &lt;- cbind(test.X,test.Y)
-train &lt;- cbind(train.X,train.Y)
-df &lt;- rbind(test,train)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGYgPC0gcmJpbmQodGVzdC5YLHRyYWluLlgpXG5kZi5ZIDwtIHJiaW5kKHRlc3QuWSx0cmFpbi5ZKVxubmFtZXMoZGYuWSkgPC0gYyhcIkFjdGl2aXR5XCIpXG5gYGAifQ== -->
+<pre class="r"><code>df &lt;- rbind(test.X,train.X)
+df.Y &lt;- rbind(test.Y,train.Y)
+names(df.Y) &lt;- c(&quot;Activity&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Step 3: Select only features with mean() or std() in name</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2RlZmluZSBoZWxwZnVsIGZ1bmN0aW9uIHRvIHNheSBpZiBzdHJpbmcgY29udGFpbnMgdmFsdWVzIGluIG1lYW5zdGRcbm1lYW4uc3RkIDwtIGZ1bmN0aW9uKHN0cmluZykge1xuICBtZWFuc3RkIDwtIGMoXCJtZWFuKClcIixcInN0ZCgpXCIpXG4gIHggPC0gRkFMU0VcbiAgZm9yIChpIGluIG1lYW5zdGQpIHtcbiAgICBpZiAoZ3JlcGwoaSxzdHJpbmcpKXtcbiAgICAgIGlmICghZ3JlcGwoXCJtZWFuRnJlcSgpXCIsc3RyaW5nKSl7XG4gICAgICAgIHggPC0gVFJVRVxuICAgICAgICBicmVha1xuICAgICAgfVxuICAgIH1cbiAgfVxuICB4XG59XG5cbiNjcmVhdGUgbWFzayBmb3IgZmVhdHVyZXMgSSB3YW50IHRvIGluY2x1ZGVcbm1hc2sgPC0gYygpXG5mb3IgKGkgaW4gZmVhdHVyZXMkVjIpIHtcbiAgbWFzayA8LSBhcHBlbmQobWFzayxtZWFuLnN0ZChpKSlcbn1cblxuI3NlbGVjdCBjb2x1bW5zIHdpdGggdmFsdWVzIFRSVUUgaW4gbWFza1xuZGYgPC0gZGZbLG1hc2tdXG5uYW1lcyhkZikgPC0gZmVhdHVyZXMkVjJbbWFza11cbmBgYCJ9 -->
+<pre class="r"><code>#define helpful function to say if string contains values in meanstd
+mean.std &lt;- function(string) {
+  meanstd &lt;- c(&quot;mean()&quot;,&quot;std()&quot;)
+  x &lt;- FALSE
+  for (i in meanstd) {
+    if (grepl(i,string)){
+      if (!grepl(&quot;meanFreq()&quot;,string)){
+        x &lt;- TRUE
+        break
+      }
+    }
+  }
+  x
+}
+
+#create mask for features I want to include
+mask &lt;- c()
+for (i in features$V2) {
+  mask &lt;- append(mask,mean.std(i))
+}
+
+#select columns with values TRUE in mask
+df &lt;- df[,mask]
+names(df) &lt;- features$V2[mask]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Step 5: Combine Features With Activity</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGYgPC0gY2JpbmQoZGYsZGYuWSlcbmBgYCJ9 -->
+<pre class="r"><code>df &lt;- cbind(df,df.Y)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNvZGUgQm9vayBXZWVrIDQgUHJvamVjdCINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNClN0ZXAgMTogUHVsbCBpbiBEYXRhDQoNCmBgYHtyfQ0KdGVzdC5YIDwtIHJlYWQudGFibGUoIi4vVUNJIEhBUiBEYXRhc2V0L3Rlc3QvWF90ZXN0LnR4dCIpDQp0cmFpbi5YIDwtIHJlYWQudGFibGUoIi4vVUNJIEhBUiBEYXRhc2V0L3RyYWluL1hfdHJhaW4udHh0IikNCnRyYWluLlkgPC0gcmVhZC50YWJsZSgiLi9VQ0kgSEFSIERhdGFzZXQvdHJhaW4vWV90cmFpbi50eHQiKQ0KdGVzdC5ZIDwtIHJlYWQudGFibGUoIi4vVUNJIEhBUiBEYXRhc2V0L3Rlc3QvWV90ZXN0LnR4dCIpDQpgYGANCg0KU3RlcCAyOiBNZXJnZSBhbGwgZGF0YSBpbnRvIG9uZSBkYXRhZnJhbWUNCg0KYGBge3J9DQp0ZXN0IDwtIGNiaW5kKHRlc3QuWCx0ZXN0LlkpDQp0cmFpbiA8LSBjYmluZCh0cmFpbi5YLHRyYWluLlkpDQpkZiA8LSByYmluZCh0ZXN0LHRyYWluKQ0KYGBgDQoNCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNvZGUgQm9vayBXZWVrIDQgUHJvamVjdCINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNClN0ZXAgMTogUHVsbCBpbiBEYXRhDQoNCmBgYHtyfQ0KdGVzdC5YIDwtIHJlYWQudGFibGUoIi4vVUNJIEhBUiBEYXRhc2V0L3Rlc3QvWF90ZXN0LnR4dCIpDQp0cmFpbi5YIDwtIHJlYWQudGFibGUoIi4vVUNJIEhBUiBEYXRhc2V0L3RyYWluL1hfdHJhaW4udHh0IikNCnRyYWluLlkgPC0gcmVhZC50YWJsZSgiLi9VQ0kgSEFSIERhdGFzZXQvdHJhaW4vWV90cmFpbi50eHQiKQ0KdGVzdC5ZIDwtIHJlYWQudGFibGUoIi4vVUNJIEhBUiBEYXRhc2V0L3Rlc3QvWV90ZXN0LnR4dCIpDQpgYGANCg0KU3RlcCAyOiBNZXJnZSBhbGwgZmVhdHVyZSBkYXRhIGludG8gb25lIGRhdGFmcmFtZQ0KDQpgYGB7cn0NCmRmIDwtIHJiaW5kKHRlc3QuWCx0cmFpbi5YKQ0KZGYuWSA8LSByYmluZCh0ZXN0LlksdHJhaW4uWSkNCm5hbWVzKGRmLlkpIDwtIGMoIkFjdGl2aXR5IikNCmBgYA0KDQpTdGVwIDM6IFNlbGVjdCBvbmx5IGZlYXR1cmVzIHdpdGggbWVhbigpIG9yIHN0ZCgpIGluIG5hbWUNCmBgYHtyfQ0KI2RlZmluZSBoZWxwZnVsIGZ1bmN0aW9uIHRvIHNheSBpZiBzdHJpbmcgY29udGFpbnMgdmFsdWVzIGluIG1lYW5zdGQNCm1lYW4uc3RkIDwtIGZ1bmN0aW9uKHN0cmluZykgew0KICBtZWFuc3RkIDwtIGMoIm1lYW4oKSIsInN0ZCgpIikNCiAgeCA8LSBGQUxTRQ0KICBmb3IgKGkgaW4gbWVhbnN0ZCkgew0KICAgIGlmIChncmVwbChpLHN0cmluZykpew0KICAgICAgaWYgKCFncmVwbCgibWVhbkZyZXEoKSIsc3RyaW5nKSl7DQogICAgICAgIHggPC0gVFJVRQ0KICAgICAgICBicmVhaw0KICAgICAgfQ0KICAgIH0NCiAgfQ0KICB4DQp9DQoNCiNjcmVhdGUgbWFzayBmb3IgZmVhdHVyZXMgSSB3YW50IHRvIGluY2x1ZGUNCm1hc2sgPC0gYygpDQpmb3IgKGkgaW4gZmVhdHVyZXMkVjIpIHsNCiAgbWFzayA8LSBhcHBlbmQobWFzayxtZWFuLnN0ZChpKSkNCn0NCg0KI3NlbGVjdCBjb2x1bW5zIHdpdGggdmFsdWVzIFRSVUUgaW4gbWFzaw0KZGYgPC0gZGZbLG1hc2tdDQpuYW1lcyhkZikgPC0gZmVhdHVyZXMkVjJbbWFza10NCmBgYA0KDQpTdGVwIDU6IENvbWJpbmUgRmVhdHVyZXMgV2l0aCBBY3Rpdml0eQ0KYGBge3J9DQpkZiA8LSBjYmluZChkZixkZi5ZKQ0KYGBgDQoNCg==</div>
 
 
 
